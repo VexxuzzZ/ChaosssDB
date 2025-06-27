@@ -1,21 +1,33 @@
-import fs from 'fs/promises';
+import { readFile, writeFile } from 'fs/promises';
+import path from 'path';
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).end('Method Not Allowed');
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Metode tidak diizinkan' });
+  }
+
+  const { nomor } = req.body;
+  if (!nomor) {
+    return res.status(400).json({ error: 'Nomor tidak boleh kosong' });
+  }
+
+  const filePath = path.join(process.cwd(), 'data', 'database.json');
 
   try {
-    const { nomor } = await req.json();
-    const file = await fs.readFile('data/database.json', 'utf8');
+    const file = await readFile(filePath, 'utf-8');
     const data = JSON.parse(file);
 
-    if (!data.includes(nomor)) {
-      data.push(nomor);
-      await fs.writeFile('data/database.json', JSON.stringify(data, null, 2));
-      res.status(200).json({ success: true });
-    } else {
-      res.status(409).json({ error: 'Nomor sudah ada' });
+    // Cek duplikat
+    if (data.find(entry => entry.nomor === nomor)) {
+      return res.status(409).json({ error: 'Nomor sudah ada' });
     }
+
+    data.push({ nomor });
+
+    await writeFile(filePath, JSON.stringify(data, null, 2));
+    return res.status(200).json({ success: true, nomor });
   } catch (err) {
-    res.status(500).json({ error: 'Gagal menambahkan nomor' });
+    console.error(err);
+    return res.status(500).json({ error: 'Gagal menambahkan nomor' });
   }
 }
