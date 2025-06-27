@@ -1,0 +1,14 @@
+{
+  "name": "vonzie-database",
+  "version": "1.0.0",
+  "description": "Web database nomor WhatsApp dengan API routes dan penyimpanan JSON",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel start"
+  },
+  "dependencies": {
+    "fs-extra": "^11.1.1"
+  },
+  "type": "module"
+}
