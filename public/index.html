@@ -5,158 +5,194 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Vonzie Database</title>
   <style>
-    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
     body {
       margin: 0;
-      background: radial-gradient(circle, #00f2fe, #4facfe, #0072ff);
-      background-size: cover;
-      display: flex; justify-content: center; align-items: center;
+      background: radial-gradient(circle, #0f0c29, #302b63, #24243e);
+      display: flex;
+      justify-content: center;
+      align-items: center;
       height: 100vh;
     }
     .box {
-      background: rgba(0, 0, 50, 0.9);
-      border: 2px solid #00f2fe;
-      border-radius: 12px;
-      padding: 25px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 30px;
       width: 95%;
       max-width: 400px;
-      box-shadow: 0 0 20px #00f2fe;
-      color: white;
+      box-shadow: 0 0 15px rgba(0, 0, 255, 0.5);
       text-align: center;
     }
-    h2 { margin-bottom: 20px; }
+    .box img {
+      width: 70px;
+      margin-bottom: 15px;
+    }
+    h2 {
+      color: #1e90ff;
+      margin-bottom: 20px;
+    }
     input, button {
       width: 100%;
       padding: 12px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       border-radius: 8px;
       font-size: 16px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #1e90ff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
       border: none;
     }
-    input { border: 1px solid #00f2fe; }
-    button {
-      background: #00c6ff; color: white;
-      font-weight: bold; cursor: pointer;
+    button:hover {
+      background: #155ab4;
     }
-    button:hover { background: #0084ff; }
+    .nav-button {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .nav-button button {
+      flex: 1;
+    }
     table {
       width: 100%;
       margin-top: 15px;
       border-collapse: collapse;
-      color: white;
     }
     th, td {
       padding: 10px;
-      border-bottom: 1px solid #00f2fe;
+      border-bottom: 1px solid #ccc;
+      text-align: left;
     }
     footer {
       margin-top: 20px;
       font-size: 14px;
+      color: #333;
     }
-    a { color: #00f2fe; text-decoration: none; }
-    #tambahSection { display: none; }
-    .nav-button { display: flex; gap: 10px; margin-bottom: 15px; }
-    .nav-button button { flex: 1; }
+    footer a {
+      color: #1e90ff;
+      text-decoration: none;
+    }
+    #tambahSection {
+      display: none;
+    }
   </style>
 </head>
 <body>
 
-<div class="box" id="loginBox">
-  <h2>Login Panel</h2>
-  <input type="password" id="loginPassword" placeholder="Masukkan Password">
-  <button onclick="checkLogin()">Login</button>
-</div>
-
-<div class="box" id="mainBox" style="display:none;">
-  <h2>Vonzie Database</h2>
-
-  <div class="nav-button">
-    <button onclick="toggleSection('view')">📄 Lihat Data</button>
-    <button onclick="toggleSection('tambah')">➕ Tambah Nomor</button>
+  <div class="box" id="loginBox">
+    <img src="https://cdn-icons-png.flaticon.com/512/6195/6195699.png" alt="Logo" />
+    <h2>Login Panel</h2>
+    <input type="password" id="loginPassword" placeholder="Masukkan Password">
+    <button onclick="checkLogin()">Login</button>
   </div>
 
-  <div id="viewSection">
-    <input type="text" id="searchInput" placeholder="Cari nomor..." onkeyup="cariNomor()">
-    <table>
-      <thead><tr><th>Nomor</th></tr></thead>
-      <tbody id="isiTabel"></tbody>
-    </table>
+  <div class="box" id="mainBox" style="display:none;">
+    <img src="https://cdn-icons-png.flaticon.com/512/6195/6195699.png" alt="Logo" />
+    <h2>Vonzie Database</h2>
+
+    <div class="nav-button">
+      <button onclick="toggleSection('view')">📄 Lihat Data</button>
+      <button onclick="toggleSection('tambah')">➕ Tambah Nomor</button>
+    </div>
+
+    <!-- View Section -->
+    <div id="viewSection">
+      <input type="text" id="searchInput" placeholder="Cari nomor..." onkeyup="cariNomor()">
+      <table>
+        <thead><tr><th>Nomor</th></tr></thead>
+        <tbody id="isiTabel"></tbody>
+      </table>
+    </div>
+
+    <!-- Tambah Section -->
+    <div id="tambahSection">
+      <input type="text" id="inputNomor" placeholder="Masukkan nomor baru...">
+      <button onclick="tambahNomor()">Tambahkan</button>
+    </div>
+
+    <footer>
+      Contact Dev: <a href="https://wa.me/6281234567890" target="_blank">WhatsApp</a> |
+      <a href="mailto:dev@vonzie.id">Email</a>
+    </footer>
   </div>
 
-  <div id="tambahSection">
-    <input type="text" id="inputNomor" placeholder="Masukkan nomor baru...">
-    <button onclick="tambahNomor()">Tambahkan</button>
-  </div>
+  <script>
+    const dataURL = "/api/get";
+    const addURL = "/api/add";
+    const loginPassword = "vonzie123";
 
-  <footer>
-    Contact Dev: <a href="https://wa.me/6281234567890" target="_blank">WhatsApp</a> | 
-    <a href="mailto:dev@vonzie.id">Email</a>
-  </footer>
-</div>
-
-<script>
-  const loginPassword = "vonzie123";
-
-  function checkLogin() {
-    const pass = document.getElementById("loginPassword").value;
-    if (pass === loginPassword) {
-      document.getElementById("loginBox").style.display = "none";
-      document.getElementById("mainBox").style.display = "block";
-      loadData();
-    } else {
-      alert("Password salah!");
-    }
-  }
-
-  function toggleSection(mode) {
-    document.getElementById("viewSection").style.display = mode === "view" ? "block" : "none";
-    document.getElementById("tambahSection").style.display = mode === "tambah" ? "block" : "none";
-  }
-
-  function loadData() {
-    fetch("/api/get")
-      .then(res => res.json())
-      .then(data => {
-        const isiTabel = document.getElementById("isiTabel");
-        isiTabel.innerHTML = "";
-        data.forEach(item => {
-          isiTabel.innerHTML += `<tr><td>${item.nomor}</td></tr>`;
-        });
-      })
-      .catch(() => {
-        document.getElementById("isiTabel").innerHTML = "<tr><td>Gagal muat data</td></tr>";
-      });
-  }
-
-  function cariNomor() {
-    const keyword = document.getElementById("searchInput").value.toLowerCase();
-    const rows = document.querySelectorAll("#isiTabel tr");
-    rows.forEach(row => {
-      row.style.display = row.textContent.toLowerCase().includes(keyword) ? "" : "none";
-    });
-  }
-
-  function tambahNomor() {
-    const nomor = document.getElementById("inputNomor").value.trim();
-    if (!nomor) return alert("Nomor kosong!");
-
-    fetch("/api/add", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nomor })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        alert("✅ Nomor berhasil ditambahkan!");
-        document.getElementById("inputNomor").value = "";
+    function checkLogin() {
+      const pass = document.getElementById("loginPassword").value;
+      if (pass === loginPassword) {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("mainBox").style.display = "block";
         loadData();
       } else {
-        alert("❌ Gagal: " + data.error);
+        alert("❌ Password salah!");
       }
-    });
-  }
-</script>
+    }
+
+    function toggleSection(mode) {
+      document.getElementById("viewSection").style.display = mode === "view" ? "block" : "none";
+      document.getElementById("tambahSection").style.display = mode === "tambah" ? "block" : "none";
+    }
+
+    function loadData() {
+      fetch(dataURL)
+        .then(res => res.json())
+        .then(data => {
+          const isiTabel = document.getElementById("isiTabel");
+          isiTabel.innerHTML = "";
+          data.forEach(item => {
+            isiTabel.innerHTML += `<tr><td>${item.nomor}</td></tr>`;
+          });
+        })
+        .catch(err => {
+          console.error("Gagal memuat data:", err);
+          document.getElementById("isiTabel").innerHTML = "<tr><td>❌ Gagal memuat data.</td></tr>";
+        });
+    }
+
+    function cariNomor() {
+      const keyword = document.getElementById("searchInput").value.toLowerCase();
+      const rows = document.querySelectorAll("#isiTabel tr");
+      rows.forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(keyword) ? "" : "none";
+      });
+    }
+
+    function tambahNomor() {
+      const nomor = document.getElementById("inputNomor").value.trim();
+      if (!nomor) return alert("⚠️ Nomor kosong!");
+
+      fetch(addURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nomor })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.message.includes("berhasil")) {
+            alert("✅ Nomor ditambahkan!");
+            document.getElementById("inputNomor").value = "";
+            loadData();
+          } else {
+            alert("❌ Gagal: " + data.message);
+          }
+        })
+        .catch(err => {
+          console.error("Tambah error:", err);
+          alert("❌ Gagal menambahkan nomor.");
+        });
+    }
+  </script>
 
 </body>
 </html>
